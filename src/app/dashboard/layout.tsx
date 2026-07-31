@@ -1,11 +1,14 @@
 "use client";
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { AuthGuard } from '@/components/auth-guard';
+import { supabase } from '@/lib/supabase';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [profilePic, setProfilePic] = useState<string | null>(null);
 
@@ -18,74 +21,82 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     window.addEventListener('profilePicUpdated', loadPic);
     return () => window.removeEventListener('profilePicUpdated', loadPic);
   }, []);
+
+  const handleLogout = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    await supabase.auth.signOut();
+    router.push('/connexion');
+  };
   
   return (
-    <div className="dashboard-layout">
-      
-      {/* Mobile Sidebar Overlay */}
-      <div 
-        className={`sidebar-overlay ${sidebarOpen ? 'open' : ''}`}
-        onClick={() => setSidebarOpen(false)}
-      />
-
-      {/* Sidebar */}
-      <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
-        <div className="sidebar-header">
-          <Link href="/" onClick={() => setSidebarOpen(false)}>
-            <img src="/logo.png" alt="DuniyaPay Logo" height="40" style={{ objectFit: 'contain' }} />
-          </Link>
-        </div>
+    <AuthGuard>
+      <div className="dashboard-layout">
         
-        <nav className="sidebar-nav">
-          <NavItem href="/dashboard" active={pathname === '/dashboard'} icon={<HomeIcon />} label="Accueil" onClick={() => setSidebarOpen(false)} />
-          <NavItem href="/dashboard/envoyer" active={pathname === '/dashboard/envoyer'} icon={<SendIcon />} label="Envoyer" onClick={() => setSidebarOpen(false)} />
-          <NavItem href="/dashboard/historique" active={pathname === '/dashboard/historique'} icon={<HistoryIcon />} label="Historique" onClick={() => setSidebarOpen(false)} />
-          <NavItem href="/dashboard/profil" active={pathname === '/dashboard/profil'} icon={<UserIcon />} label="Profil" onClick={() => setSidebarOpen(false)} />
-        </nav>
+        {/* Mobile Sidebar Overlay */}
+        <div 
+          className={`sidebar-overlay ${sidebarOpen ? 'open' : ''}`}
+          onClick={() => setSidebarOpen(false)}
+        />
 
-        <div className="sidebar-footer">
-          <Link href="/connexion" style={{ display: 'flex', alignItems: 'center', gap: '12px', textDecoration: 'none', color: 'var(--text-muted)' }}>
-            <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'rgba(22, 163, 74, 0.1)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '13px', overflow: 'hidden' }}>
-              {profilePic ? <img src={profilePic} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : 'JD'}
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-main)', lineHeight: '1.2' }}>John Doe</span>
-              <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Déconnexion</span>
-            </div>
-          </Link>
-        </div>
-      </aside>
-
-      {/* Main Content Wrapper */}
-      <div className="main-wrapper">
-        
-        {/* Top Navbar */}
-        <header className="top-navbar">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <button className="hamburger-btn" onClick={() => setSidebarOpen(true)}>
-              <MenuIcon />
-            </button>
-            <h1 style={{ fontSize: '20px', fontWeight: 700, margin: 0, color: 'var(--text-main)' }}>
-              {getPageTitle(pathname)}
-            </h1>
-          </div>
-          
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <ThemeToggle />
-            <Link href="/dashboard/notifications" style={{ position: 'relative', color: 'var(--text-main)', display: 'flex', alignItems: 'center' }}>
-              <BellIcon />
-              <span style={{ position: 'absolute', top: 0, right: 0, width: '8px', height: '8px', backgroundColor: '#EF4444', border: '2px solid var(--bg-white)', borderRadius: '50%' }}></span>
+        {/* Sidebar */}
+        <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
+          <div className="sidebar-header">
+            <Link href="/" onClick={() => setSidebarOpen(false)}>
+              <img src="/logo.png" alt="DuniyaPay Logo" height="40" style={{ objectFit: 'contain' }} />
             </Link>
           </div>
-        </header>
+          
+          <nav className="sidebar-nav">
+            <NavItem href="/dashboard" active={pathname === '/dashboard'} icon={<HomeIcon />} label="Accueil" onClick={() => setSidebarOpen(false)} />
+            <NavItem href="/dashboard/envoyer" active={pathname === '/dashboard/envoyer'} icon={<SendIcon />} label="Envoyer" onClick={() => setSidebarOpen(false)} />
+            <NavItem href="/dashboard/historique" active={pathname === '/dashboard/historique'} icon={<HistoryIcon />} label="Historique" onClick={() => setSidebarOpen(false)} />
+            <NavItem href="/dashboard/profil" active={pathname === '/dashboard/profil'} icon={<UserIcon />} label="Profil" onClick={() => setSidebarOpen(false)} />
+          </nav>
 
-        {/* Page Content */}
-        <main className="main-content">
-          {children}
-        </main>
+          <div className="sidebar-footer">
+            <a href="#" onClick={handleLogout} style={{ display: 'flex', alignItems: 'center', gap: '12px', textDecoration: 'none', color: 'var(--text-muted)' }}>
+              <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'rgba(22, 163, 74, 0.1)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '13px', overflow: 'hidden' }}>
+                {profilePic ? <img src={profilePic} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : 'JD'}
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-main)', lineHeight: '1.2' }}>Mon Compte</span>
+                <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Déconnexion</span>
+              </div>
+            </a>
+          </div>
+        </aside>
+
+        {/* Main Content Wrapper */}
+        <div className="main-wrapper">
+          
+          {/* Top Navbar */}
+          <header className="top-navbar">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <button className="hamburger-btn" onClick={() => setSidebarOpen(true)}>
+                <MenuIcon />
+              </button>
+              <h1 style={{ fontSize: '20px', fontWeight: 700, margin: 0, color: 'var(--text-main)' }}>
+                {getPageTitle(pathname)}
+              </h1>
+            </div>
+            
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <ThemeToggle />
+              <Link href="/dashboard/notifications" style={{ position: 'relative', color: 'var(--text-main)', display: 'flex', alignItems: 'center' }}>
+                <BellIcon />
+                <span style={{ position: 'absolute', top: 0, right: 0, width: '8px', height: '8px', backgroundColor: '#EF4444', border: '2px solid var(--bg-white)', borderRadius: '50%' }}></span>
+              </Link>
+            </div>
+          </header>
+
+          {/* Page Content */}
+          <main className="main-content">
+            {children}
+          </main>
+        </div>
+
       </div>
-
-    </div>
+    </AuthGuard>
   );
 }
 

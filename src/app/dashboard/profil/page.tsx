@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { PageWrapper } from '@/components/page-wrapper';
+import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 
 export default function Profil() {
@@ -100,9 +101,10 @@ export default function Profil() {
         )}
 
         <button 
-          onClick={() => {
-            toast("Déconnexion réussie");
-            router.push('/');
+          onClick={async () => {
+            await supabase.auth.signOut();
+            toast.success("Déconnexion réussie");
+            router.push('/connexion');
           }}
           style={{ width: '100%', marginTop: hasUnsavedChanges ? '16px' : '40px', padding: '18px', borderRadius: '16px', background: '#FEE2E2', color: '#DC2626', border: 'none', fontWeight: 700, fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', transition: 'background 0.2s' }}
           onMouseOver={(e) => e.currentTarget.style.background = '#FCA5A5'}
