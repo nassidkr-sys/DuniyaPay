@@ -1,8 +1,34 @@
 "use client";
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { supabase } from '@/lib/supabase';
 
 export default function Recevoir() {
+  const [userName, setUserName] = useState<string>('Utilisateur');
+  const [initials, setInitials] = useState<string>('U');
+  const [handle, setHandle] = useState<string>('@utilisateur');
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) return;
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('full_name')
+        .eq('id', session.user.id)
+        .single();
+      
+      if (profile) {
+        const name = profile.full_name;
+        setUserName(name);
+        const nameParts = name.split(' ');
+        setInitials(nameParts.map((n: string) => n[0]).join('').substring(0, 2).toUpperCase());
+        setHandle('@' + name.replace(/\s+/g, '').toLowerCase());
+      }
+    };
+    fetchProfile();
+  }, []);
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', position: 'relative', backgroundColor: 'var(--bg-light)' }}>
       <header style={{ padding: '24px', background: 'var(--bg-white)', display: 'flex', alignItems: 'center', borderBottom: '1px solid var(--border)' }}>
@@ -23,11 +49,11 @@ export default function Recevoir() {
         <div style={{ background: 'var(--bg-white)', padding: '32px', borderRadius: '32px', border: '1px solid var(--border)', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.1)', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', maxWidth: '320px', marginBottom: '32px' }}>
           
           <div style={{ width: '64px', height: '64px', borderRadius: '50%', backgroundColor: 'rgba(22, 163, 74, 0.1)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '24px', marginBottom: '16px' }}>
-            JD
+            {initials}
           </div>
           
-          <h2 style={{ fontSize: '20px', fontWeight: 800, color: 'var(--text-main)', marginBottom: '4px' }}>John Doe</h2>
-          <span style={{ fontSize: '14px', color: 'var(--text-muted)', fontWeight: 600, marginBottom: '24px' }}>@johndoe</span>
+          <h2 style={{ fontSize: '20px', fontWeight: 800, color: 'var(--text-main)', marginBottom: '4px' }}>{userName}</h2>
+          <span style={{ fontSize: '14px', color: 'var(--text-muted)', fontWeight: 600, marginBottom: '24px' }}>{handle}</span>
 
           {/* Placeholder for actual QR Code Image */}
           <div style={{ width: '200px', height: '200px', background: 'var(--bg-light)', border: '2px dashed var(--border)', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px', position: 'relative' }}>

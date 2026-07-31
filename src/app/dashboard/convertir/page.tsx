@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import { supabase } from '@/lib/supabase';
 
 const rates: Record<string, number> = {
   'XOF': 1,
@@ -14,6 +15,24 @@ export default function Convertir() {
   const [amount, setAmount] = useState('');
   const [sourceCurrency, setSourceCurrency] = useState('XOF');
   const [targetCurrency, setTargetCurrency] = useState('EUR');
+  const [balance, setBalance] = useState<number>(0);
+
+  useEffect(() => {
+    const fetchBalance = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) return;
+      const { data: wallet } = await supabase
+        .from('wallets')
+        .select('balance')
+        .eq('profile_id', session.user.id)
+        .single();
+      
+      if (wallet) {
+        setBalance(wallet.balance);
+      }
+    };
+    fetchBalance();
+  }, []);
 
   // Convert source to XOF first, then to target
   const getConvertedAmount = () => {
@@ -53,7 +72,7 @@ export default function Convertir() {
           <div style={{ marginBottom: '16px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
               <span style={{ fontSize: '13px', color: 'var(--text-muted)', fontWeight: 600 }}>Vous envoyez</span>
-              {sourceCurrency === 'XOF' && <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>Solde: 2 787 500 FCFA</span>}
+              {sourceCurrency === 'XOF' && <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>Solde: {balance.toLocaleString('fr-FR')} FCFA</span>}
             </div>
             <div style={{ display: 'flex', alignItems: 'center', background: 'var(--bg-light)', padding: '12px 16px', borderRadius: '16px', border: '1px solid var(--border)' }}>
               <input 

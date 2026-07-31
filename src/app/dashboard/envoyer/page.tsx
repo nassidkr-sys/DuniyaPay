@@ -1,11 +1,30 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PageWrapper } from '@/components/page-wrapper';
 import { toast } from 'sonner';
+import { supabase } from '@/lib/supabase';
 
 export default function Envoyer() {
   const [amount, setAmount] = useState('');
   const [recipient, setRecipient] = useState('');
+  const [balance, setBalance] = useState<number>(0);
+
+  useEffect(() => {
+    const fetchBalance = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) return;
+      const { data: wallet } = await supabase
+        .from('wallets')
+        .select('balance')
+        .eq('profile_id', session.user.id)
+        .single();
+      
+      if (wallet) {
+        setBalance(wallet.balance);
+      }
+    };
+    fetchBalance();
+  }, []);
 
   const handleSend = () => {
     toast.success(`Transfert de ${amount} FCFA vers ${recipient} réussi !`);
@@ -25,7 +44,7 @@ export default function Envoyer() {
             </div>
             <div>
               <div style={{ fontSize: '14px', color: 'var(--text-muted)', fontWeight: 600 }}>Solde disponible</div>
-              <div style={{ fontSize: '20px', fontWeight: 800, color: 'var(--text-main)' }}>2 787 500 FCFA</div>
+              <div style={{ fontSize: '20px', fontWeight: 800, color: 'var(--text-main)' }}>{balance.toLocaleString('fr-FR')} FCFA</div>
             </div>
           </div>
         </div>
