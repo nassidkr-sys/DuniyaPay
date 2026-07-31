@@ -39,23 +39,23 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   
   return (
     <AdminAuthGuard>
-      <div style={{ display: 'flex', height: '100vh', backgroundColor: '#09090B', color: '#FAFAFA' }}>
+      <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#09090B', color: '#FAFAFA' }}>
         
         {/* Mobile Sidebar Overlay */}
         <div 
-          style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 40, display: sidebarOpen ? 'block' : 'none' }}
+          className={`sidebar-overlay ${sidebarOpen ? 'open' : ''}`}
           onClick={() => setSidebarOpen(false)}
         />
 
         {/* Sidebar */}
-        <aside style={{ width: '280px', backgroundColor: '#18181B', borderRight: '1px solid #27272A', display: 'flex', flexDirection: 'column', transition: 'transform 0.3s', zIndex: 50, position: 'relative' }}>
+        <aside className={`admin-sidebar ${sidebarOpen ? 'open' : ''}`}>
           <div style={{ padding: '24px', borderBottom: '1px solid #27272A', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Link href="/admin" onClick={() => setSidebarOpen(false)}>
               <img src="/logo.png" alt="DuniyaPay Logo" height="40" style={{ objectFit: 'contain', filter: 'brightness(0) invert(1)' }} />
             </Link>
           </div>
           
-          <nav style={{ flex: 1, padding: '24px 16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <nav style={{ flex: 1, padding: '24px 16px', display: 'flex', flexDirection: 'column', gap: '8px', overflowY: 'auto' }}>
             <NavItem href="/admin" active={pathname === '/admin'} icon={<DashboardIcon />} label="Aperçu Global" onClick={() => setSidebarOpen(false)} />
             <NavItem href="/admin/utilisateurs" active={pathname.includes('/admin/utilisateurs')} icon={<UsersIcon />} label="Utilisateurs" onClick={() => setSidebarOpen(false)} />
             <NavItem href="/admin/transactions" active={pathname.includes('/admin/transactions')} icon={<HistoryIcon />} label="Transactions" onClick={() => setSidebarOpen(false)} />
@@ -75,22 +75,27 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </aside>
 
         {/* Main Content Wrapper */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, overflow: 'hidden' }}>
+        <div className="admin-main-wrapper">
           
           {/* Top Navbar */}
-          <header style={{ height: '72px', borderBottom: '1px solid #27272A', backgroundColor: '#09090B', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 24px' }}>
-            <h1 style={{ fontSize: '20px', fontWeight: 700, margin: 0, color: '#FAFAFA' }}>
-              {getPageTitle(pathname)}
-            </h1>
+          <header className="admin-top-navbar">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <button className="admin-hamburger" onClick={() => setSidebarOpen(true)}>
+                <MenuIcon />
+              </button>
+              <h1 style={{ fontSize: '20px', fontWeight: 700, margin: 0, color: '#FAFAFA' }}>
+                {getPageTitle(pathname)}
+              </h1>
+            </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                <div style={{ padding: '6px 12px', backgroundColor: 'rgba(34, 211, 238, 0.1)', color: '#22D3EE', borderRadius: '20px', fontSize: '12px', fontWeight: 700, border: '1px solid rgba(34, 211, 238, 0.2)' }}>
-                 Mode Administrateur
+                 Mode Admin
                </div>
             </div>
           </header>
 
           {/* Page Content */}
-          <main style={{ flex: 1, overflowY: 'auto', padding: '32px' }}>
+          <main style={{ flex: 1, overflowY: 'auto', padding: '24px' }}>
             {children}
           </main>
         </div>
@@ -127,3 +132,4 @@ function getPageTitle(pathname: string) {
 const DashboardIcon = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>;
 const HistoryIcon = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>;
 const UsersIcon = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>;
+const MenuIcon = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>;

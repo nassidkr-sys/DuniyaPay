@@ -423,3 +423,71 @@ h1, h2, h3, h4, h5, h6 {
   from { opacity: 0; transform: scale(0.95) translateY(10px); }
   to { opacity: 1; transform: scale(1) translateY(0); }
 }
+
+/* -------------------------------------
+   ADMIN RESPONSIVE LAYOUT
+---------------------------------------- */
+.admin-sidebar {
+  width: 280px;
+  background-color: #18181B;
+  border-right: 1px solid #27272A;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 50;
+  transition: transform 0.3s ease;
+}
+
+.admin-main-wrapper {
+  flex: 1;
+  margin-left: 280px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.admin-top-navbar {
+  height: 72px;
+  background-color: #09090B;
+  border-bottom: 1px solid #27272A;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+
+.admin-hamburger {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #FAFAFA;
+}
+
+@media (max-width: 1024px) {
+  .admin-sidebar {
+    transform: translateX(-100%);
+  }
+  .admin-sidebar.open {
+    transform: translateX(0);
+  }
+  .admin-main-wrapper {
+    margin-left: 0;
+  }
+  .admin-hamburger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .admin-top-navbar {
+    padding: 0 16px;
+  }
+}
