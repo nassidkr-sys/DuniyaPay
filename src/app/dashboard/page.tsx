@@ -1,6 +1,8 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { PageWrapper } from '@/components/page-wrapper';
+import { motion } from 'framer-motion';
 
 interface Transaction {
   id: number;
@@ -38,75 +40,92 @@ export default function Dashboard() {
     setTransactions(JSON.parse(localStorage.getItem('dunyapay_transactions')!));
   }, []);
 
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const item = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: 'easeOut' } }
+  };
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-      
-      {/* Greeting */}
-      <div>
-        <h2 style={{ fontSize: '28px', fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.02em', margin: 0 }}>
-          {greeting}, John
-        </h2>
-        <p style={{ color: 'var(--text-muted)', fontSize: '15px', marginTop: '4px' }}>
-          Prêt à gérer vos finances aujourd'hui ?
-        </p>
-      </div>
-
-      {/* Main Grid for Desktop */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '24px' }}>
+    <PageWrapper className="page-content" style={{ padding: '24px', flex: 1, overflowY: 'auto' }}>
+      <motion.div variants={container} initial="hidden" animate="show" style={{ display: 'flex', flexDirection: 'column', gap: '32px', maxWidth: '1200px', margin: '0 auto', width: '100%' }}>
         
-        {/* Left Column: Balance & Quick Actions */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          {/* Balance Card XOF */}
-          <div className="balance-card-full" style={{ padding: '32px', borderRadius: '24px', background: 'linear-gradient(135deg, var(--secondary), var(--secondary-hover))', color: 'white', boxShadow: '0 15px 30px -5px rgba(37, 99, 235, 0.3)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px', alignItems: 'center' }}>
-              <span style={{ fontSize: '15px', opacity: 0.9, fontWeight: 500 }}>Solde de votre portefeuille</span>
-              <span style={{ fontSize: '12px', background: 'rgba(255,255,255,0.2)', padding: '6px 12px', borderRadius: '12px', fontWeight: 600 }}>FCFA</span>
+        {/* Greeting */}
+        <motion.div variants={item}>
+          <h2 style={{ fontSize: '28px', fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.02em', margin: 0 }}>
+            {greeting}, John
+          </h2>
+          <p style={{ color: 'var(--text-muted)', fontSize: '15px', marginTop: '4px' }}>
+            Prêt à gérer vos finances aujourd'hui ?
+          </p>
+        </motion.div>
+
+        {/* Main Grid for Desktop */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '24px' }}>
+          
+          {/* Left Column: Balance & Quick Actions */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            {/* Balance Card XOF */}
+            <motion.div variants={item} className="balance-card-full" style={{ padding: '32px', borderRadius: '24px', background: 'linear-gradient(135deg, var(--secondary), var(--secondary-hover))', color: 'white', boxShadow: '0 15px 30px -5px rgba(37, 99, 235, 0.3)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px', alignItems: 'center' }}>
+                <span style={{ fontSize: '15px', opacity: 0.9, fontWeight: 500 }}>Solde de votre portefeuille</span>
+                <span style={{ fontSize: '12px', background: 'rgba(255,255,255,0.2)', padding: '6px 12px', borderRadius: '12px', fontWeight: 600 }}>FCFA</span>
+              </div>
+              <div style={{ fontSize: '42px', fontWeight: 800, letterSpacing: '-1px', marginBottom: '12px' }}>
+                {balance.toLocaleString('fr-FR')} FCFA
+              </div>
+              <p style={{ fontSize: '14px', opacity: 0.8, margin: 0, fontWeight: 500 }}>~ € {(balance / 655.957).toLocaleString('fr-FR', {maximumFractionDigits: 2})} EUR (1€ = 655.957 FCFA)</p>
+            </motion.div>
+
+            {/* Action Buttons */}
+            <motion.div variants={item} style={{ display: 'flex', gap: '16px' }}>
+              <Link href="/dashboard/envoyer" className="btn btn-primary" style={{ flex: 1, justifyContent: 'center', padding: '16px', fontSize: '15px', textDecoration: 'none', borderRadius: '16px' }}>
+                <SendIcon /> Envoyer
+              </Link>
+              <Link href="/dashboard/recevoir" className="btn btn-secondary" style={{ flex: 1, justifyContent: 'center', padding: '16px', fontSize: '15px', textDecoration: 'none', borderRadius: '16px', backgroundColor: 'var(--bg-white)', color: 'var(--text-main)', border: '1px solid var(--border)', boxShadow: '0 4px 6px rgba(0,0,0,0.02)' }}>
+                <BanknoteIcon /> Recevoir
+              </Link>
+            </motion.div>
+
+            {/* Quick Action Grid (2x2) */}
+            <motion.div variants={item} style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' }}>
+              <Link href="/dashboard/recharger" style={{ textDecoration: 'none' }}>
+                <ActionCard icon={<WalletIcon color="var(--primary)" />} label="Recharger" />
+              </Link>
+              <Link href="/dashboard/convertir" style={{ textDecoration: 'none' }}>
+                <ActionCard icon={<ConvertIcon color="#F59E0B" />} label="Convertir" />
+              </Link>
+            </motion.div>
+          </div>
+
+          {/* Right Column: Recent Transactions */}
+          <motion.div variants={item} style={{ background: 'var(--bg-white)', borderRadius: '24px', border: '1px solid var(--border)', padding: '24px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.02)', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+              <h2 style={{ fontSize: '18px', fontWeight: 700, margin: 0, color: 'var(--text-main)' }}>Transactions récentes</h2>
+              <Link href="/dashboard/historique" style={{ color: 'var(--secondary)', fontSize: '14px', fontWeight: 600, textDecoration: 'none' }}>Voir tout</Link>
             </div>
-            <div style={{ fontSize: '42px', fontWeight: 800, letterSpacing: '-1px', marginBottom: '12px' }}>
-              {balance.toLocaleString('fr-FR')} FCFA
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', flex: 1 }}>
+              {transactions.slice(0, 5).map((tx) => (
+                <TxItem key={tx.id} title={tx.title} sub={tx.sub} amount={tx.amount} isDebit={tx.isDebit} onClick={() => setSelectedTx(tx)} />
+              ))}
             </div>
-            <p style={{ fontSize: '14px', opacity: 0.8, margin: 0, fontWeight: 500 }}>~ € {(balance / 655.957).toLocaleString('fr-FR', {maximumFractionDigits: 2})} EUR (1€ = 655.957 FCFA)</p>
-          </div>
-
-          {/* Action Buttons */}
-          <div style={{ display: 'flex', gap: '16px' }}>
-            <Link href="/dashboard/envoyer" className="btn btn-primary" style={{ flex: 1, justifyContent: 'center', padding: '16px', fontSize: '15px', textDecoration: 'none', borderRadius: '16px' }}>
-              <SendIcon /> Envoyer
-            </Link>
-            <Link href="/dashboard/recevoir" className="btn btn-secondary" style={{ flex: 1, justifyContent: 'center', padding: '16px', fontSize: '15px', textDecoration: 'none', borderRadius: '16px', backgroundColor: 'white', color: 'var(--text-main)', border: '1px solid var(--border)', boxShadow: '0 4px 6px rgba(0,0,0,0.02)' }}>
-              <BanknoteIcon /> Recevoir
-            </Link>
-          </div>
-
-          {/* Quick Action Grid (2x2) */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' }}>
-            <Link href="/dashboard/recharger" style={{ textDecoration: 'none' }}>
-              <ActionCard icon={<WalletIcon color="var(--primary)" />} label="Recharger" />
-            </Link>
-            <Link href="/dashboard/convertir" style={{ textDecoration: 'none' }}>
-              <ActionCard icon={<ConvertIcon color="#F59E0B" />} label="Convertir" />
-            </Link>
-          </div>
+          </motion.div>
         </div>
-
-        {/* Right Column: Recent Transactions */}
-        <div style={{ background: 'white', borderRadius: '24px', border: '1px solid var(--border)', padding: '24px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.02)', display: 'flex', flexDirection: 'column' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-            <h2 style={{ fontSize: '18px', fontWeight: 700, margin: 0 }}>Transactions récentes</h2>
-            <Link href="/dashboard/historique" style={{ color: 'var(--secondary)', fontSize: '14px', fontWeight: 600, textDecoration: 'none' }}>Voir tout</Link>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', flex: 1 }}>
-            {transactions.slice(0, 5).map((tx) => (
-              <TxItem key={tx.id} title={tx.title} sub={tx.sub} amount={tx.amount} isDebit={tx.isDebit} onClick={() => setSelectedTx(tx)} />
-            ))}
-          </div>
-        </div>
-      </div>
+      </motion.div>
 
       {/* Centered Modal for Transaction Details */}
       {selectedTx && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(17, 24, 39, 0.4)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
-          <div className="modal-pro" style={{ backgroundColor: 'white', width: '100%', maxWidth: '440px', borderRadius: '24px', padding: '32px', display: 'flex', flexDirection: 'column', gap: '24px', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)', border: '1px solid var(--border)' }}>
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0, 0, 0, 0.5)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} style={{ backgroundColor: 'var(--bg-white)', width: '100%', maxWidth: '440px', borderRadius: '24px', padding: '32px', display: 'flex', flexDirection: 'column', gap: '24px', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)', border: '1px solid var(--border)' }}>
             
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span style={{ fontWeight: 800, fontSize: '18px', color: 'var(--text-main)', letterSpacing: '-0.02em' }}>Détails de l'opération</span>
@@ -154,17 +173,17 @@ export default function Dashboard() {
               Fermer le reçu
             </button>
 
-          </div>
+          </motion.div>
         </div>
       )}
 
-    </div>
+    </PageWrapper>
   );
 }
 
 function ActionCard({ icon, label }: { icon: React.ReactNode, label: string }) {
   return (
-    <div className="action-card-hover" style={{ background: 'white', padding: '24px', borderRadius: '20px', border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', cursor: 'pointer', transition: 'all 0.2s', boxShadow: '0 4px 6px rgba(0,0,0,0.02)' }}>
+    <div className="action-card-hover" style={{ background: 'var(--bg-white)', padding: '24px', borderRadius: '20px', border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', cursor: 'pointer', transition: 'all 0.2s', boxShadow: '0 4px 6px rgba(0,0,0,0.02)' }}>
       <div style={{ width: '56px', height: '56px', background: 'var(--bg-light)', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         {icon}
       </div>
@@ -175,7 +194,7 @@ function ActionCard({ icon, label }: { icon: React.ReactNode, label: string }) {
 
 function TxItem({ title, sub, amount, isDebit = false, onClick }: { title: string, sub: string, amount: string, isDebit?: boolean, onClick?: () => void }) {
   return (
-    <div className="tx-item-hover" onClick={onClick} style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '16px', borderRadius: '16px', background: 'white', border: '1px solid var(--border)', cursor: 'pointer', transition: 'background-color 0.2s' }}>
+    <div className="tx-item-hover" onClick={onClick} style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '16px', borderRadius: '16px', background: 'var(--bg-white)', border: '1px solid var(--border)', cursor: 'pointer', transition: 'background-color 0.2s' }}>
       <div style={{ width: '42px', height: '42px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: isDebit ? '#FEE2E2' : '#DCFCE7', color: isDebit ? '#DC2626' : '#16A34A', flexShrink: 0 }}>
         {isDebit ? <ArrowUpIcon /> : <ArrowDownIcon />}
       </div>

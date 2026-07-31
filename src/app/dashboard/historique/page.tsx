@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from 'react';
-import Link from 'next/link';
+import { PageWrapper } from '@/components/page-wrapper';
+import { motion } from 'framer-motion';
 
 interface Transaction {
   id: number;
@@ -8,7 +9,7 @@ interface Transaction {
   sub: string;
   amount: string;
   isDebit: boolean;
-  date: string; // 'Aujourd'hui', 'Hier', etc.
+  date: string;
 }
 
 const allTransactions: Transaction[] = [
@@ -32,42 +33,49 @@ export default function Historique() {
     return true;
   });
 
-  // Group by date
   const grouped = filteredTransactions.reduce((acc, tx) => {
     if (!acc[tx.date]) acc[tx.date] = [];
     acc[tx.date].push(tx);
     return acc;
   }, {} as Record<string, Transaction[]>);
 
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', position: 'relative' }}>
-      <header style={{ padding: '24px', borderBottom: '1px solid var(--border)', background: 'white', display: 'flex', alignItems: 'center' }}>
-        <Link href="/dashboard" style={{ color: 'var(--text-main)', textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-        </Link>
-        <h1 style={{ fontSize: '20px', margin: '0 auto', fontWeight: 700 }}>Historique</h1>
-        <div style={{ width: '24px' }}></div> {/* Spacer */}
-      </header>
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.08
+      }
+    }
+  };
 
-      <div style={{ padding: '20px' }}>
+  const item = {
+    hidden: { opacity: 0, y: 15 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.3, ease: 'easeOut' } }
+  };
+
+  return (
+    <PageWrapper className="page-content" style={{ padding: '24px', flex: 1, overflowY: 'auto' }}>
+      <div style={{ maxWidth: '700px', margin: '0 auto', width: '100%' }}>
+        
         {/* Filters */}
-        <div style={{ display: 'flex', gap: '8px', marginBottom: '24px' }}>
+        <div style={{ display: 'flex', gap: '8px', marginBottom: '32px' }}>
           <button 
             onClick={() => setFilter('all')}
             className={filter === 'all' ? 'btn btn-primary' : 'btn'} 
-            style={{ padding: '8px 16px', fontSize: '13px', borderRadius: '20px', ...(filter !== 'all' ? { background: 'white', color: 'var(--text-main)', border: '1px solid var(--border)' } : {}) }}>
+            style={{ padding: '8px 16px', fontSize: '14px', borderRadius: '20px', ...(filter !== 'all' ? { background: 'var(--bg-white)', color: 'var(--text-main)', border: '1px solid var(--border)' } : {}) }}>
             Tout
           </button>
           <button 
             onClick={() => setFilter('in')}
             className={filter === 'in' ? 'btn btn-primary' : 'btn'} 
-            style={{ padding: '8px 16px', fontSize: '13px', borderRadius: '20px', ...(filter !== 'in' ? { background: 'white', color: 'var(--text-main)', border: '1px solid var(--border)' } : {}) }}>
+            style={{ padding: '8px 16px', fontSize: '14px', borderRadius: '20px', ...(filter !== 'in' ? { background: 'var(--bg-white)', color: 'var(--text-main)', border: '1px solid var(--border)' } : {}) }}>
             Entrées
           </button>
           <button 
             onClick={() => setFilter('out')}
             className={filter === 'out' ? 'btn btn-primary' : 'btn'} 
-            style={{ padding: '8px 16px', fontSize: '13px', borderRadius: '20px', ...(filter !== 'out' ? { background: 'white', color: 'var(--text-main)', border: '1px solid var(--border)' } : {}) }}>
+            style={{ padding: '8px 16px', fontSize: '14px', borderRadius: '20px', ...(filter !== 'out' ? { background: 'var(--bg-white)', color: 'var(--text-main)', border: '1px solid var(--border)' } : {}) }}>
             Sorties
           </button>
         </div>
@@ -78,30 +86,31 @@ export default function Historique() {
             Aucune transaction trouvée.
           </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <motion.div variants={container} initial="hidden" animate="show" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
             {Object.entries(grouped).map(([date, txs]) => (
               <div key={date} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: 600 }}>{date}</span>
+                <span style={{ fontSize: '13px', color: 'var(--text-muted)', fontWeight: 600 }}>{date}</span>
                 {txs.map(tx => (
-                  <TxItem 
-                    key={tx.id} 
-                    title={tx.title} 
-                    sub={tx.sub} 
-                    amount={(tx.isDebit ? "- " : "+ ") + tx.amount} 
-                    isDebit={tx.isDebit} 
-                    onClick={() => setSelectedTx(tx)}
-                  />
+                  <motion.div key={tx.id} variants={item}>
+                    <TxItem 
+                      title={tx.title} 
+                      sub={tx.sub} 
+                      amount={(tx.isDebit ? "- " : "+ ") + tx.amount} 
+                      isDebit={tx.isDebit} 
+                      onClick={() => setSelectedTx(tx)}
+                    />
+                  </motion.div>
                 ))}
               </div>
             ))}
-          </div>
+          </motion.div>
         )}
       </div>
 
-      {/* Centered Modal for Transaction Details (Pro Web Responsive) */}
+      {/* Centered Modal for Transaction Details */}
       {selectedTx && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(17, 24, 39, 0.4)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
-          <div className="modal-pro" style={{ backgroundColor: 'white', width: '100%', maxWidth: '440px', borderRadius: '24px', padding: '32px', display: 'flex', flexDirection: 'column', gap: '24px', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)', border: '1px solid var(--border)' }}>
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0, 0, 0, 0.5)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} style={{ backgroundColor: 'var(--bg-white)', width: '100%', maxWidth: '440px', borderRadius: '24px', padding: '32px', display: 'flex', flexDirection: 'column', gap: '24px', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)', border: '1px solid var(--border)' }}>
             
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span style={{ fontWeight: 800, fontSize: '18px', color: 'var(--text-main)', letterSpacing: '-0.02em' }}>Détails de l'opération</span>
@@ -149,24 +158,24 @@ export default function Historique() {
               Fermer le reçu
             </button>
 
-          </div>
+          </motion.div>
         </div>
       )}
-    </div>
+    </PageWrapper>
   );
 }
 
 function TxItem({ title, sub, amount, isDebit = false, onClick }: { title: string, sub: string, amount: string, isDebit?: boolean, onClick?: () => void }) {
   return (
-    <div className="tx-item-hover" onClick={onClick} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', borderRadius: '12px', background: 'white', border: '1px solid var(--border)', cursor: 'pointer' }}>
-      <div style={{ width: '36px', height: '36px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: isDebit ? '#FEE2E2' : '#DCFCE7', color: isDebit ? '#DC2626' : '#16A34A' }}>
+    <div className="tx-item-hover" onClick={onClick} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '16px', borderRadius: '16px', background: 'var(--bg-white)', border: '1px solid var(--border)', cursor: 'pointer', boxShadow: '0 2px 5px rgba(0,0,0,0.02)', transition: 'all 0.2s' }}>
+      <div style={{ width: '40px', height: '40px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: isDebit ? '#FEE2E2' : '#DCFCE7', color: isDebit ? '#DC2626' : '#16A34A' }}>
         {isDebit ? <ArrowUpIcon /> : <ArrowDownIcon />}
       </div>
       <div style={{ flex: 1 }}>
-        <div style={{ fontWeight: 700, fontSize: '13px', color: 'var(--text-main)', marginBottom: '2px' }}>{title}</div>
-        <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{sub}</div>
+        <div style={{ fontWeight: 700, fontSize: '15px', color: 'var(--text-main)', marginBottom: '4px' }}>{title}</div>
+        <div style={{ fontSize: '13px', color: 'var(--text-muted)', fontWeight: 500 }}>{sub}</div>
       </div>
-      <div style={{ fontWeight: 800, fontSize: '13px', color: isDebit ? 'var(--text-main)' : 'var(--primary)' }}>
+      <div style={{ fontWeight: 800, fontSize: '15px', color: isDebit ? 'var(--text-main)' : 'var(--primary)' }}>
         {amount}
       </div>
     </div>

@@ -4,6 +4,7 @@ import Link from 'next/link';
 
 export default function Connexion() {
   const [showPassword, setShowPassword] = useState(false);
+  const [password, setPassword] = useState('');
 
   return (
     <div className="auth-container">
@@ -29,12 +30,17 @@ export default function Connexion() {
                <input 
                  type={showPassword ? "text" : "password"} 
                  placeholder="••••••••" 
+                 value={password}
+                 onChange={(e) => setPassword(e.target.value)}
                  className="auth-input" 
-                 style={{ width: '100%', paddingRight: '40px' }} 
+                 style={{ width: '100%', paddingRight: '44px' }} 
                />
                <button 
                  type="button" 
-                 onClick={() => setShowPassword(!showPassword)}
+                 onClick={(e) => {
+                   e.preventDefault();
+                   setShowPassword(!showPassword);
+                 }}
                  style={{
                    position: 'absolute',
                    right: '12px',
@@ -45,7 +51,8 @@ export default function Connexion() {
                    display: 'flex',
                    alignItems: 'center',
                    justifyContent: 'center',
-                   padding: 0
+                   padding: '4px',
+                   zIndex: 10
                  }}
                >
                  {showPassword ? <EyeOffIcon /> : <EyeIcon />}

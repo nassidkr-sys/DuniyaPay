@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Inter, Poppins } from "next/font/google";
 import "./globals.css";
+import { Providers } from "@/components/providers";
+import { Toaster } from "sonner";
 
 const inter = Inter({ 
   subsets: ["latin"], 
@@ -26,8 +28,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr" className="scroll-smooth">
-      <body className={`${inter.variable} ${poppins.variable} font-sans`}>{children}</body>
+    <html lang="fr" className="scroll-smooth" suppressHydrationWarning>
+      <body className={`${inter.variable} ${poppins.variable} font-sans`}>
+        <Providers>
+          {children}
+          <Toaster position="top-right" richColors />
+        </Providers>
+      </body>
     </html>
   );
 }

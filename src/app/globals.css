@@ -11,6 +11,15 @@
   --disabled: #E5E7EB;
 }
 
+.dark {
+  --bg-white: #0F1117;
+  --bg-light: #1A1D27;
+  --text-main: #F1F3F5;
+  --text-muted: #8B95A5;
+  --border: #2E3341;
+  --disabled: #2E3341;
+}
+
 * { box-sizing: border-box; padding: 0; margin: 0; }
 body {
   font-family: var(--font-inter), sans-serif;
