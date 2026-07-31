@@ -4,8 +4,10 @@ import Link from 'next/link';
 import { PageWrapper } from '@/components/page-wrapper';
 import { motion } from 'framer-motion';
 
+import { supabase } from '@/lib/supabase';
+
 interface Transaction {
-  id: number;
+  id: string;
   title: string;
   sub: string;
   amount: string;
@@ -13,31 +15,63 @@ interface Transaction {
 }
 
 export default function Dashboard() {
-  const [balance, setBalance] = useState<number>(2787500);
+  const [balance, setBalance] = useState<number>(0);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [selectedTx, setSelectedTx] = useState<Transaction | null>(null);
   const [greeting, setGreeting] = useState<string>('Bonjour');
+  const [userName, setUserName] = useState<string>('');
 
   useEffect(() => {
     const hour = new Date().getHours();
     setGreeting(hour < 18 ? 'Bonjour' : 'Bonsoir');
 
-    if (!localStorage.getItem('dunyapay_balance')) {
-      localStorage.setItem('dunyapay_balance', '2787500');
-    }
-    setBalance(Number(localStorage.getItem('dunyapay_balance')));
+    const fetchData = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) return;
 
-    if (!localStorage.getItem('dunyapay_transactions')) {
-      const defaultTx = [
-        { id: 1, title: "Transfert Orange Money", sub: "SN • Mariama Ba", amount: "- 98 400 FCFA", isDebit: true },
-        { id: 2, title: "Rechargement Compte", sub: "Finissant par 4242", amount: "+ 328 000 FCFA", isDebit: false },
-        { id: 3, title: "Envoi bancaire", sub: "FR • Loyer", amount: "- 426 400 FCFA", isDebit: true },
-        { id: 4, title: "Paiement Facture", sub: "Senelec", amount: "- 15 000 FCFA", isDebit: true },
-        { id: 5, title: "Réception", sub: "Mamadou Diop", amount: "+ 50 000 FCFA", isDebit: false }
-      ];
-      localStorage.setItem('dunyapay_transactions', JSON.stringify(defaultTx));
-    }
-    setTransactions(JSON.parse(localStorage.getItem('dunyapay_transactions')!));
+      // Fetch Profile
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('full_name')
+        .eq('id', session.user.id)
+        .single();
+      
+      if (profile) {
+        setUserName(profile.full_name.split(' ')[0]); // Get first name
+      }
+
+      // Fetch Wallet
+      const { data: wallet } = await supabase
+        .from('wallets')
+        .select('balance')
+        .eq('profile_id', session.user.id)
+        .single();
+      
+      if (wallet) {
+        setBalance(wallet.balance);
+      }
+
+      // Fetch Transactions
+      const { data: txs } = await supabase
+        .from('transactions')
+        .select('*')
+        .eq('profile_id', session.user.id)
+        .order('created_at', { ascending: false })
+        .limit(5);
+
+      if (txs) {
+        const formattedTxs: Transaction[] = txs.map(tx => ({
+          id: tx.id,
+          title: tx.title,
+          sub: tx.subtitle || 'DuniyaPay',
+          amount: `${tx.type === 'DEPOSIT' || tx.type === 'TRANSFER_IN' ? '+' : '-'} ${tx.amount.toLocaleString('fr-FR')} FCFA`,
+          isDebit: tx.type === 'WITHDRAWAL' || tx.type === 'TRANSFER_OUT'
+        }));
+        setTransactions(formattedTxs);
+      }
+    };
+
+    fetchData();
   }, []);
 
   const container = {
@@ -62,7 +96,7 @@ export default function Dashboard() {
         {/* Greeting */}
         <motion.div variants={item}>
           <h2 style={{ fontSize: '28px', fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.02em', margin: 0 }}>
-            {greeting}, John
+            {greeting}, {userName || '...'}
           </h2>
           <p style={{ color: 'var(--text-muted)', fontSize: '15px', marginTop: '4px' }}>
             Prêt à gérer vos finances aujourd'hui ?

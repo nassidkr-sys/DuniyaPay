@@ -11,6 +11,8 @@ export default function Profil() {
   const [profilePic, setProfilePic] = useState<string | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [previewPic, setPreviewPic] = useState<string | null>(null);
+  const [userName, setUserName] = useState('Chargement...');
+  const [userEmail, setUserEmail] = useState('Chargement...');
 
   React.useEffect(() => {
     const savedPic = localStorage.getItem('dunyapay_profile_pic');
@@ -18,6 +20,25 @@ export default function Profil() {
       setProfilePic(savedPic);
       setPreviewPic(savedPic);
     }
+
+    const fetchProfile = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        setUserEmail(session.user.email || 'Email introuvable');
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('full_name')
+          .eq('id', session.user.id)
+          .single();
+        
+        if (data && !error) {
+          setUserName(data.full_name);
+        } else {
+          setUserName('Utilisateur');
+        }
+      }
+    };
+    fetchProfile();
   }, []);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -67,8 +88,8 @@ export default function Profil() {
               <input type="file" accept="image/*" onChange={handleImageUpload} style={{ display: 'none' }} />
             </label>
           </div>
-          <h2 style={{ fontSize: '24px', fontWeight: 800, color: 'var(--text-main)', marginTop: '16px', marginBottom: '4px' }}>John Doe</h2>
-          <span style={{ fontSize: '15px', color: 'var(--text-muted)', fontWeight: 600 }}>john.doe@example.com</span>
+          <h2 style={{ fontSize: '24px', fontWeight: 800, color: 'var(--text-main)', marginTop: '16px', marginBottom: '4px' }}>{userName}</h2>
+          <span style={{ fontSize: '15px', color: 'var(--text-muted)', fontWeight: 600 }}>{userEmail}</span>
         </div>
 
         {/* Settings List */}

@@ -11,6 +11,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [profilePic, setProfilePic] = useState<string | null>(null);
+  const [userName, setUserName] = useState<string>('Chargement...');
 
   React.useEffect(() => {
     const loadPic = () => {
@@ -19,6 +20,26 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     };
     loadPic();
     window.addEventListener('profilePicUpdated', loadPic);
+
+    // Fetch user profile data
+    const fetchProfile = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('full_name')
+          .eq('id', session.user.id)
+          .single();
+        
+        if (data && !error) {
+          setUserName(data.full_name);
+        } else {
+          setUserName('Utilisateur');
+        }
+      }
+    };
+    fetchProfile();
+
     return () => window.removeEventListener('profilePicUpdated', loadPic);
   }, []);
 
@@ -56,10 +77,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div className="sidebar-footer">
             <a href="#" onClick={handleLogout} style={{ display: 'flex', alignItems: 'center', gap: '12px', textDecoration: 'none', color: 'var(--text-muted)' }}>
               <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'rgba(22, 163, 74, 0.1)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '13px', overflow: 'hidden' }}>
-                {profilePic ? <img src={profilePic} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : 'JD'}
+                {profilePic ? <img src={profilePic} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : (userName && userName !== 'Chargement...' ? userName.charAt(0).toUpperCase() : 'JD')}
               </div>
               <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-main)', lineHeight: '1.2' }}>Mon Compte</span>
+                <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-main)', lineHeight: '1.2', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '140px' }}>{userName}</span>
                 <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Déconnexion</span>
               </div>
             </a>
