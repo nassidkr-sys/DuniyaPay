@@ -90,7 +90,7 @@ export default function Dashboard() {
   };
 
   return (
-    <PageWrapper className="page-content" style={{ padding: '24px', flex: 1, overflowY: 'auto' }}>
+    <PageWrapper className="page-content" style={{ flex: 1, overflowY: 'auto' }}>
       <motion.div variants={container} initial="hidden" animate="show" style={{ display: 'flex', flexDirection: 'column', gap: '32px', maxWidth: '1200px', margin: '0 auto', width: '100%' }}>
         
         {/* Greeting */}
@@ -104,12 +104,12 @@ export default function Dashboard() {
         </motion.div>
 
         {/* Main Grid for Desktop */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '24px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))', gap: '24px' }}>
           
           {/* Left Column: Balance & Quick Actions */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
             {/* Balance Card XOF */}
-            <motion.div variants={item} className="balance-card-full" style={{ padding: '32px', borderRadius: '24px', background: 'linear-gradient(135deg, var(--secondary), var(--secondary-hover))', color: 'white', boxShadow: '0 15px 30px -5px rgba(37, 99, 235, 0.3)' }}>
+            <motion.div variants={item} className="balance-card-full" style={{ padding: '24px', borderRadius: '24px', background: 'linear-gradient(135deg, var(--secondary), var(--secondary-hover))', color: 'white', boxShadow: '0 15px 30px -5px rgba(37, 99, 235, 0.3)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px', alignItems: 'center' }}>
                 <span style={{ fontSize: '15px', opacity: 0.9, fontWeight: 500 }}>Solde de votre portefeuille</span>
                 <span style={{ fontSize: '12px', background: 'rgba(255,255,255,0.2)', padding: '6px 12px', borderRadius: '12px', fontWeight: 600 }}>FCFA</span>

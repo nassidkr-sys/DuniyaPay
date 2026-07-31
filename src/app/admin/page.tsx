@@ -68,7 +68,7 @@ export default function AdminDashboard() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', maxWidth: '1200px', margin: '0 auto' }}>
       
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: '24px' }}>
         <StatCard title="Utilisateurs Inscrits" value={stats.totalUsers.toString()} icon={<UsersIcon />} color="#6C5CE7" />
         <StatCard title="Volume Total (FCFA)" value={stats.totalVolume.toLocaleString('fr-FR')} icon={<WalletIcon />} color="#10B981" />
         <StatCard title="Transactions Aujourd'hui" value={stats.txCount.toString()} icon={<TrendingIcon />} color="#3B82F6" />
