@@ -1,10 +1,42 @@
 "use client";
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabase';
+import { toast } from 'sonner';
 
 export default function Connexion() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  const handleSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email || !password) {
+      toast.error("Veuillez remplir tous les champs.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      if (error) throw error;
+
+      toast.success("Connexion réussie !");
+      router.push('/dashboard');
+    } catch (error: any) {
+      toast.error(error.message || "Email ou mot de passe incorrect.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="auth-container">
@@ -16,10 +48,10 @@ export default function Connexion() {
            <h1 style={{ marginTop: '32px', fontSize: '28px', color: 'var(--text-main)' }}>Connexion Client</h1>
            <p style={{ color: 'var(--text-muted)', marginTop: '8px' }}>Accédez à votre portefeuille DuniyaPay.</p>
          </div>
-         <form style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+         <form onSubmit={handleSignIn} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
            <div className="input-group">
              <label>Email</label>
-             <input type="email" placeholder="john@example.com" className="auth-input" />
+             <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="john@example.com" className="auth-input" disabled={loading} />
            </div>
            <div className="input-group">
              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -34,6 +66,7 @@ export default function Connexion() {
                  onChange={(e) => setPassword(e.target.value)}
                  className="auth-input" 
                  style={{ width: '100%', paddingRight: '44px' }} 
+                 disabled={loading}
                />
                <button 
                  type="button" 
@@ -59,9 +92,9 @@ export default function Connexion() {
                </button>
              </div>
            </div>
-           <Link href="/dashboard" className="btn btn-primary" style={{ justifyContent: 'center', padding: '16px', marginTop: '16px', textDecoration: 'none', fontSize: '16px' }}>
-             Se connecter
-           </Link>
+           <button type="submit" disabled={loading} className="btn btn-primary" style={{ justifyContent: 'center', padding: '16px', marginTop: '16px', fontSize: '16px', opacity: loading ? 0.7 : 1 }}>
+             {loading ? 'Connexion en cours...' : 'Se connecter'}
+           </button>
          </form>
          <div style={{ textAlign: 'center', marginTop: '32px', fontSize: '15px', color: 'var(--text-muted)' }}>
            Nouveau sur DuniyaPay ?{' '}
