@@ -273,18 +273,18 @@ export default function LandingPage() {
                   style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: '380px' }}
                 >
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' }}>
-                    <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '20px', padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <motion.div whileHover={{ scale: 1.05 }} transition={{ type: 'spring', stiffness: 300, damping: 20 }} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '20px', padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px', cursor: 'default' }}>
                       <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>XOF</div>
                       <div style={{ fontSize: '18px', fontWeight: 700, color: '#FAFAFA' }}>Franc CFA</div>
-                    </div>
-                    <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '20px', padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    </motion.div>
+                    <motion.div whileHover={{ scale: 1.05 }} transition={{ type: 'spring', stiffness: 300, damping: 20 }} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '20px', padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px', cursor: 'default' }}>
                       <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>EUR</div>
                       <div style={{ fontSize: '18px', fontWeight: 700, color: '#FAFAFA' }}>Euro</div>
-                    </div>
-                    <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '20px', padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    </motion.div>
+                    <motion.div whileHover={{ scale: 1.05 }} transition={{ type: 'spring', stiffness: 300, damping: 20 }} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '20px', padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px', cursor: 'default' }}>
                       <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>USD</div>
                       <div style={{ fontSize: '18px', fontWeight: 700, color: '#FAFAFA' }}>Dollar US</div>
-                    </div>
+                    </motion.div>
                     <div style={{ background: 'rgba(108,92,231,0.1)', border: '1px solid rgba(108,92,231,0.3)', borderRadius: '20px', padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px', justifyContent: 'center', alignItems: 'center' }}>
                       <span style={{ color: '#818CF8', fontWeight: 700 }}>+5 Autres</span>
                     </div>
@@ -310,31 +310,37 @@ export default function LandingPage() {
       </section>
 
       {/* Testimonials */}
-      <section id="temoignages" style={{ padding: '120px 24px', backgroundColor: '#09090B' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+      <section id="temoignages" style={{ padding: '120px 0', backgroundColor: '#09090B', overflow: 'hidden' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px' }}>
           <div style={{ textAlign: 'center', marginBottom: '64px' }}>
             <h2 style={{ fontSize: 'clamp(32px, 5vw, 40px)', fontWeight: 800, color: '#FAFAFA', letterSpacing: '-0.02em', marginBottom: '16px' }}>Ils l'utilisent tous les jours.</h2>
           </div>
+        </div>
           
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '24px' }}>
-            <TestimonialCard 
-              quote="DuniyaPay a complètement changé la façon dont je paie mes fournisseurs. C'est instantané et l'interface est juste sublime."
-              name="Amadou Diallo"
-              role="Entrepreneur, Dakar"
-              initials="AD"
-            />
-            <TestimonialCard 
-              quote="Je reçois mon salaire de freelance directement dessus. La conversion en FCFA se fait à un taux imbattable sans frais cachés."
-              name="Sophie Traoré"
-              role="Designer UX/UI"
-              initials="ST"
-            />
-            <TestimonialCard 
-              quote="L'application la plus fluide que j'ai utilisée depuis des années. Le mode sombre est parfait, chaque détail est soigné."
-              name="Marc K."
-              role="Développeur Web"
-              initials="MK"
-            />
+        <div className="marquee-container" style={{ width: '100%', overflow: 'hidden', position: 'relative' }}>
+          <div className="marquee-content" style={{ display: 'flex', gap: '24px', width: 'max-content', paddingLeft: '24px' }}>
+            {[1, 2].map((group) => (
+              <React.Fragment key={group}>
+                <TestimonialCard 
+                  quote="DuniyaPay a complètement changé la façon dont je paie mes fournisseurs. C'est instantané et l'interface est juste sublime."
+                  name="Amadou Diallo"
+                  role="Entrepreneur, Dakar"
+                  initials="AD"
+                />
+                <TestimonialCard 
+                  quote="Je reçois mon salaire de freelance directement dessus. La conversion en FCFA se fait à un taux imbattable sans frais cachés."
+                  name="Sophie Traoré"
+                  role="Designer UX/UI"
+                  initials="ST"
+                />
+                <TestimonialCard 
+                  quote="L'application la plus fluide que j'ai utilisée depuis des années. Le mode sombre est parfait, chaque détail est soigné."
+                  name="Marc K."
+                  role="Développeur Web"
+                  initials="MK"
+                />
+              </React.Fragment>
+            ))}
           </div>
         </div>
       </section>
@@ -407,6 +413,16 @@ export default function LandingPage() {
           transform: translateY(-2px);
           box-shadow: 0 15px 40px rgba(34, 211, 238, 0.4) !important;
         }
+        @keyframes scrollLeft {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(calc(-50% - 12px)); }
+        }
+        .marquee-content {
+          animation: scrollLeft 20s linear infinite;
+        }
+        .marquee-content:hover {
+          animation-play-state: paused;
+        }
         @media (max-width: 768px) {
           .hidden-mobile { display: none !important; }
           .feature-row { flex-direction: column !important; }
@@ -444,7 +460,11 @@ function StepCard({ num, title, desc, icon }: { num: string, title: string, desc
 
 function TestimonialCard({ quote, name, role, initials }: { quote: string, name: string, role: string, initials: string }) {
   return (
-    <div style={{ padding: '32px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '24px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+    <motion.div 
+      whileHover={{ y: -8, scale: 1.02 }}
+      transition={{ type: "spring", stiffness: 300, damping: 20 }}
+      style={{ width: '350px', padding: '32px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '24px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', flexShrink: 0, cursor: 'default' }}
+    >
       <p style={{ color: '#E4E4E7', fontSize: '16px', lineHeight: 1.6, fontStyle: 'italic', marginBottom: '32px' }}>
         "{quote}"
       </p>
@@ -457,7 +477,7 @@ function TestimonialCard({ quote, name, role, initials }: { quote: string, name:
           <div style={{ color: '#71717A', fontSize: '13px' }}>{role}</div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
