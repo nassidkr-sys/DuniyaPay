@@ -5,7 +5,7 @@ import Link from 'next/link';
 export default function Recevoir() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', position: 'relative', backgroundColor: 'var(--bg-light)' }}>
-      <header style={{ padding: '24px', background: 'white', display: 'flex', alignItems: 'center', borderBottom: '1px solid var(--border)' }}>
+      <header style={{ padding: '24px', background: 'var(--bg-white)', display: 'flex', alignItems: 'center', borderBottom: '1px solid var(--border)' }}>
         <Link href="/dashboard" style={{ color: 'var(--text-main)', textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
         </Link>
@@ -20,7 +20,7 @@ export default function Recevoir() {
         </p>
 
         {/* QR Code Card */}
-        <div style={{ background: 'white', padding: '32px', borderRadius: '32px', border: '1px solid var(--border)', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.1)', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', maxWidth: '320px', marginBottom: '32px' }}>
+        <div style={{ background: 'var(--bg-white)', padding: '32px', borderRadius: '32px', border: '1px solid var(--border)', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.1)', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', maxWidth: '320px', marginBottom: '32px' }}>
           
           <div style={{ width: '64px', height: '64px', borderRadius: '50%', backgroundColor: 'rgba(22, 163, 74, 0.1)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '24px', marginBottom: '16px' }}>
             JD
@@ -47,7 +47,7 @@ export default function Recevoir() {
                <rect x="40" y="70" width="20" height="20" rx="2" fill="var(--text-main)" />
                <rect x="70" y="45" width="20" height="45" rx="2" fill="var(--text-main)" />
              </svg>
-             <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '40px', height: '40px', background: 'white', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }}>
+             <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '40px', height: '40px', background: 'var(--bg-white)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }}>
                 <img src="/logo.png" alt="D" style={{ height: '20px' }} />
              </div>
           </div>

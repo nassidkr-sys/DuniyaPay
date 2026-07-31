@@ -38,7 +38,7 @@ export default function Convertir() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', position: 'relative' }}>
-      <header style={{ padding: '24px', borderBottom: '1px solid var(--border)', background: 'white', display: 'flex', alignItems: 'center' }}>
+      <header style={{ padding: '24px', borderBottom: '1px solid var(--border)', background: 'var(--bg-white)', display: 'flex', alignItems: 'center' }}>
         <Link href="/dashboard" style={{ color: 'var(--text-main)', textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
         </Link>
@@ -47,7 +47,7 @@ export default function Convertir() {
       </header>
 
       <div style={{ padding: '24px' }}>
-        <div style={{ background: 'white', borderRadius: '24px', padding: '24px', border: '1px solid var(--border)', boxShadow: '0 10px 25px rgba(0,0,0,0.02)', marginBottom: '32px' }}>
+        <div style={{ background: 'var(--bg-white)', borderRadius: '24px', padding: '24px', border: '1px solid var(--border)', boxShadow: '0 10px 25px rgba(0,0,0,0.02)', marginBottom: '32px' }}>
           
           {/* Source Currency */}
           <div style={{ marginBottom: '16px' }}>
@@ -63,7 +63,7 @@ export default function Convertir() {
                 placeholder="0"
                 style={{ flex: 1, border: 'none', background: 'transparent', fontSize: '24px', fontWeight: 800, color: 'var(--text-main)', outline: 'none', width: '100%' }}
               />
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'white', padding: '8px 12px', borderRadius: '10px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', fontWeight: 700 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--bg-white)', padding: '8px 12px', borderRadius: '10px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', fontWeight: 700 }}>
                 <CurrencySelector value={sourceCurrency} onChange={setSourceCurrency} options={currencies} />
               </div>
             </div>
@@ -73,7 +73,7 @@ export default function Convertir() {
           <div style={{ display: 'flex', justifyContent: 'center', margin: '-12px 0' }}>
             <button 
               onClick={handleSwap}
-              style={{ width: '40px', height: '40px', background: 'white', border: '1px solid var(--border)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10, boxShadow: '0 4px 6px rgba(0,0,0,0.05)', color: 'var(--text-main)', cursor: 'pointer', transition: 'transform 0.2s' }}
+              style={{ width: '40px', height: '40px', background: 'var(--bg-white)', border: '1px solid var(--border)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10, boxShadow: '0 4px 6px rgba(0,0,0,0.05)', color: 'var(--text-main)', cursor: 'pointer', transition: 'transform 0.2s' }}
               onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
               onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
             >
@@ -94,7 +94,7 @@ export default function Convertir() {
                 placeholder="0.00"
                 style={{ flex: 1, border: 'none', background: 'transparent', fontSize: '24px', fontWeight: 800, color: 'var(--text-main)', outline: 'none', width: '100%' }}
               />
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'white', padding: '8px 12px', borderRadius: '10px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', fontWeight: 700 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--bg-white)', padding: '8px 12px', borderRadius: '10px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', fontWeight: 700 }}>
                 <CurrencySelector value={targetCurrency} onChange={setTargetCurrency} options={currencies} />
               </div>
             </div>
@@ -141,7 +141,7 @@ function CurrencySelector({ value, onChange, options }: { value: string, onChang
       </div>
 
       {isOpen && (
-        <div className="modal-pro" style={{ position: 'absolute', top: '100%', right: 0, marginTop: '12px', background: 'white', borderRadius: '16px', boxShadow: '0 20px 40px -10px rgba(0,0,0,0.15)', border: '1px solid var(--border)', zIndex: 100, minWidth: '120px', overflow: 'hidden', transformOrigin: 'top right' }}>
+        <div className="modal-pro" style={{ position: 'absolute', top: '100%', right: 0, marginTop: '12px', background: 'var(--bg-white)', borderRadius: '16px', boxShadow: '0 20px 40px -10px rgba(0,0,0,0.15)', border: '1px solid var(--border)', zIndex: 100, minWidth: '120px', overflow: 'hidden', transformOrigin: 'top right' }}>
           <div style={{ display: 'flex', flexDirection: 'column', padding: '6px' }}>
             {options.map(opt => (
               <div 
