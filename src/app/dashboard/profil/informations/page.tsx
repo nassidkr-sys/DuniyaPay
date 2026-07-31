@@ -1,18 +1,69 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { supabase } from '@/lib/supabase';
+import { useRouter } from 'next/navigation';
 
 export default function InformationsPersonnelles() {
+  const router = useRouter();
   const [formData, setFormData] = useState({
-    firstName: 'John',
-    lastName: 'Doe',
-    email: 'john.doe@example.com',
-    phone: '+221 77 123 45 67',
-    address: 'Dakar, Sénégal'
+    full_name: '',
+    phone_number: '',
+    email: ''
   });
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState({ type: '', text: '' });
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        setUserId(session.user.id);
+        const { data } = await supabase
+          .from('profiles')
+          .select('full_name, phone_number')
+          .eq('id', session.user.id)
+          .single();
+        
+        setFormData({
+          full_name: data?.full_name || '',
+          phone_number: data?.phone_number || '',
+          email: session.user.email || ''
+        });
+      }
+      setLoading(false);
+    };
+    fetchProfile();
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSave = async () => {
+    if (!userId) return;
+    setSaving(true);
+    setMessage({ type: '', text: '' });
+
+    const { error } = await supabase
+      .from('profiles')
+      .update({
+        full_name: formData.full_name,
+        phone_number: formData.phone_number
+      })
+      .eq('id', userId);
+
+    setSaving(false);
+
+    if (error) {
+      setMessage({ type: 'error', text: 'Erreur lors de la sauvegarde.' });
+    } else {
+      setMessage({ type: 'success', text: 'Modifications enregistrées !' });
+      // Notify layout to update name if needed
+      setTimeout(() => router.refresh(), 1000);
+    }
   };
 
   return (
@@ -27,27 +78,27 @@ export default function InformationsPersonnelles() {
 
       <div style={{ padding: '24px', flex: 1, overflowY: 'auto' }}>
         
+        {message.text && (
+          <div style={{ 
+            padding: '16px', borderRadius: '12px', marginBottom: '24px', fontWeight: 600, fontSize: '14px',
+            backgroundColor: message.type === 'success' ? 'rgba(22, 163, 74, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+            color: message.type === 'success' ? 'var(--primary)' : '#EF4444'
+          }}>
+            {message.text}
+          </div>
+        )}
+
         <div style={{ background: 'var(--bg-white)', padding: '24px', borderRadius: '24px', border: '1px solid var(--border)', boxShadow: '0 4px 6px rgba(0,0,0,0.02)', display: 'flex', flexDirection: 'column', gap: '20px' }}>
           
           <div className="input-group">
-            <label style={{ marginBottom: '8px', display: 'block', fontWeight: 600, fontSize: '14px', color: 'var(--text-main)' }}>Prénom</label>
+            <label style={{ marginBottom: '8px', display: 'block', fontWeight: 600, fontSize: '14px', color: 'var(--text-main)' }}>Nom complet</label>
             <input 
               type="text" 
-              name="firstName"
-              value={formData.firstName}
+              name="full_name"
+              value={formData.full_name}
               onChange={handleChange}
               className="auth-input"
-            />
-          </div>
-
-          <div className="input-group">
-            <label style={{ marginBottom: '8px', display: 'block', fontWeight: 600, fontSize: '14px', color: 'var(--text-main)' }}>Nom de famille</label>
-            <input 
-              type="text" 
-              name="lastName"
-              value={formData.lastName}
-              onChange={handleChange}
-              className="auth-input"
+              disabled={loading}
             />
           </div>
 
@@ -57,37 +108,34 @@ export default function InformationsPersonnelles() {
               type="email" 
               name="email"
               value={formData.email}
-              onChange={handleChange}
               className="auth-input"
+              disabled={true}
+              style={{ backgroundColor: 'var(--bg-light)', color: 'var(--text-muted)' }}
             />
+            <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>L'e-mail ne peut pas être modifié ici.</span>
           </div>
 
           <div className="input-group">
             <label style={{ marginBottom: '8px', display: 'block', fontWeight: 600, fontSize: '14px', color: 'var(--text-main)' }}>Numéro de téléphone</label>
             <input 
               type="tel" 
-              name="phone"
-              value={formData.phone}
+              name="phone_number"
+              value={formData.phone_number}
               onChange={handleChange}
               className="auth-input"
-            />
-          </div>
-
-          <div className="input-group">
-            <label style={{ marginBottom: '8px', display: 'block', fontWeight: 600, fontSize: '14px', color: 'var(--text-main)' }}>Adresse postale</label>
-            <input 
-              type="text" 
-              name="address"
-              value={formData.address}
-              onChange={handleChange}
-              className="auth-input"
+              disabled={loading}
             />
           </div>
 
         </div>
 
-        <button className="btn btn-primary" style={{ width: '100%', marginTop: '32px', padding: '16px', borderRadius: '16px', fontSize: '16px', justifyContent: 'center' }}>
-          Enregistrer les modifications
+        <button 
+          onClick={handleSave}
+          disabled={saving || loading}
+          className="btn btn-primary" 
+          style={{ width: '100%', marginTop: '32px', padding: '16px', borderRadius: '16px', fontSize: '16px', justifyContent: 'center', opacity: saving || loading ? 0.7 : 1 }}
+        >
+          {saving ? 'Enregistrement...' : 'Enregistrer les modifications'}
         </button>
 
       </div>
