@@ -17,7 +17,7 @@ export default function InformationsPersonnelles() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', position: 'relative', backgroundColor: 'var(--bg-light)' }}>
-      <header style={{ padding: '24px', background: 'white', display: 'flex', alignItems: 'center', borderBottom: '1px solid var(--border)' }}>
+      <header style={{ padding: '24px', background: 'var(--bg-white)', display: 'flex', alignItems: 'center', borderBottom: '1px solid var(--border)' }}>
         <Link href="/dashboard/profil" style={{ color: 'var(--text-main)', textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
         </Link>
@@ -27,7 +27,7 @@ export default function InformationsPersonnelles() {
 
       <div style={{ padding: '24px', flex: 1, overflowY: 'auto' }}>
         
-        <div style={{ background: 'white', padding: '24px', borderRadius: '24px', border: '1px solid var(--border)', boxShadow: '0 4px 6px rgba(0,0,0,0.02)', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <div style={{ background: 'var(--bg-white)', padding: '24px', borderRadius: '24px', border: '1px solid var(--border)', boxShadow: '0 4px 6px rgba(0,0,0,0.02)', display: 'flex', flexDirection: 'column', gap: '20px' }}>
           
           <div className="input-group">
             <label style={{ marginBottom: '8px', display: 'block', fontWeight: 600, fontSize: '14px', color: 'var(--text-main)' }}>Prénom</label>

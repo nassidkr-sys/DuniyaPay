@@ -8,11 +8,14 @@ import { toast } from 'sonner';
 export default function Profil() {
   const router = useRouter();
   const [profilePic, setProfilePic] = useState<string | null>(null);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [previewPic, setPreviewPic] = useState<string | null>(null);
 
   React.useEffect(() => {
     const savedPic = localStorage.getItem('dunyapay_profile_pic');
     if (savedPic) {
       setProfilePic(savedPic);
+      setPreviewPic(savedPic);
     }
   }, []);
 
@@ -22,13 +25,21 @@ export default function Profil() {
       const reader = new FileReader();
       reader.onloadend = () => {
         const base64String = reader.result as string;
-        setProfilePic(base64String);
-        localStorage.setItem('dunyapay_profile_pic', base64String);
-        window.dispatchEvent(new Event('profilePicUpdated'));
-        toast.success("Photo de profil mise à jour !");
+        setPreviewPic(base64String);
+        setHasUnsavedChanges(true);
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleSave = () => {
+    if (previewPic) {
+      setProfilePic(previewPic);
+      localStorage.setItem('dunyapay_profile_pic', previewPic);
+      window.dispatchEvent(new Event('profilePicUpdated'));
+    }
+    setHasUnsavedChanges(false);
+    toast.success("Modifications enregistrées !");
   };
 
   return (
@@ -39,8 +50,8 @@ export default function Profil() {
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '40px' }}>
           <div style={{ position: 'relative', width: '120px', height: '120px' }}>
             <div style={{ width: '100%', height: '100%', borderRadius: '50%', backgroundColor: 'rgba(22, 163, 74, 0.1)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '36px', overflow: 'hidden', border: '4px solid var(--bg-white)', boxShadow: '0 4px 10px rgba(0,0,0,0.05)' }}>
-              {profilePic ? (
-                <img src={profilePic} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              {previewPic ? (
+                <img src={previewPic} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               ) : (
                 "JD"
               )}
@@ -78,12 +89,22 @@ export default function Profil() {
           
         </div>
 
+        {hasUnsavedChanges && (
+          <button 
+            onClick={handleSave}
+            className="btn btn-primary"
+            style={{ width: '100%', marginTop: '32px', padding: '16px', borderRadius: '16px', fontSize: '16px', justifyContent: 'center' }}
+          >
+            Enregistrer les modifications
+          </button>
+        )}
+
         <button 
           onClick={() => {
             toast("Déconnexion réussie");
             router.push('/');
           }}
-          style={{ width: '100%', marginTop: '40px', padding: '18px', borderRadius: '16px', background: '#FEE2E2', color: '#DC2626', border: 'none', fontWeight: 700, fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', transition: 'background 0.2s' }}
+          style={{ width: '100%', marginTop: hasUnsavedChanges ? '16px' : '40px', padding: '18px', borderRadius: '16px', background: '#FEE2E2', color: '#DC2626', border: 'none', fontWeight: 700, fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', transition: 'background 0.2s' }}
           onMouseOver={(e) => e.currentTarget.style.background = '#FCA5A5'}
           onMouseOut={(e) => e.currentTarget.style.background = '#FEE2E2'}
         >
@@ -99,6 +120,7 @@ export default function Profil() {
 function SettingCard({ icon, title, subtitle, href }: { icon: React.ReactNode, title: string, subtitle: string, href?: string }) {
   const content = (
     <div style={{ background: 'var(--bg-white)', padding: '20px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '16px', cursor: 'pointer', border: '1px solid var(--border)', boxShadow: '0 2px 5px rgba(0,0,0,0.02)', transition: 'all 0.2s' }}
+
       onMouseOver={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 10px 20px rgba(0,0,0,0.06)'; }}
       onMouseOut={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 5px rgba(0,0,0,0.02)'; }}
     >
