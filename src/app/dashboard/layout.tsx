@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -70,6 +71,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
           
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <ThemeToggle />
             <Link href="/dashboard/notifications" style={{ position: 'relative', color: 'var(--text-main)', display: 'flex', alignItems: 'center' }}>
               <BellIcon />
               <span style={{ position: 'absolute', top: 0, right: 0, width: '8px', height: '8px', backgroundColor: '#EF4444', border: '2px solid white', borderRadius: '50%' }}></span>
