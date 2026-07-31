@@ -403,7 +403,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .tx-item-hover:hover {
-  background-color: #F9FAFB !important;
+  background-color: var(--bg-light) !important;
 }
 
 /* Responsive */
